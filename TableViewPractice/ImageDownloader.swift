@@ -31,7 +31,7 @@ class ImageDownloader: NSObject {
                 return
             }
             guard let url = URL(string: imageURL) else { return }
-            guard let imageData = try? Data.init(contentsOf: url) else { return }
+            guard let imageData = try? Data(contentsOf: url) else { return }
             if !imageData.isEmpty {
                 let downloadedImage = UIImage(data: imageData)!
                 guard let obj = weakSelf else { return }

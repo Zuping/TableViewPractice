@@ -26,25 +26,39 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
             do {
                 let filedata = try Data(contentsOf: URL(fileURLWithPath: filepath))
                 let jsonData = try JSONSerialization.jsonObject(with: filedata, options: JSONSerialization.ReadingOptions.mutableContainers)
-                
                 if let jsonArr = jsonData as? [Any] {
                     data.reserveCapacity(jsonArr.count)
                     for i in 0 ..< jsonArr.count {
-                        let item = jsonArr[i] as! Dictionary<String, String>
-                        let rowData = RowData(i, item["fore_ground"]!, item["back_ground"]!)
-                        data.append(rowData)
+                        if let item = jsonArr[i] as? Dictionary<String, String> {
+                            let rowData = RowData(i, item["fore_ground"]!, item["back_ground"]!)
+                            data.append(rowData)
+                        } else {
+                            continue
+                        }
                     }
                 }
-                
             } catch let error as Error? {
                 print("error reading local data", error!)
             }
         }
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
+        
+//        guard let url = URL(string: "https://jsonplaceholder.typicode.com/todos") else {return}
+//        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
+//            guard let dataResponse = data,
+//                error == nil else {
+//                    print(error?.localizedDescription ?? "Response Error")
+//                    return }
+//            do{
+//                //here dataResponse received from a network request
+//                let jsonResponse = try JSONSerialization.jsonObject(with:
+//                    dataResponse, options: [])
+//                print(jsonResponse) //Response result
+//            } catch let parsingError {
+//                print("Error", parsingError)
+//            }
+//        }
+//        task.resume()
     }
 
     // MARK: - Table view data source
@@ -55,7 +69,12 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TableViewCell
+        let tmpCell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        assert(tmpCell.isKind(of: TableViewCell.self))
+        let cell = tmpCell as! TableViewCell
+//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? TableViewCell  else {
+//
+//        }
 
         let row = data[indexPath.row]
         cell.myLabel.text = String(row.rowNum)
@@ -96,6 +115,7 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
     // MARK: - UITableViewDataSourcePrefetching
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
+            NSLog("\(indexPath)")
             let rowData = self.data[indexPath.row]
             if rowData.image != nil {
                 continue
@@ -103,6 +123,9 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
             imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
                 if let image = image {
                     rowData.image = image
+                    if let cell = self.tableView.cellForRow(at: indexPath) as? TableViewCell {
+                        cell.myImageView.image = image
+                    }
                 }
             }
         }
