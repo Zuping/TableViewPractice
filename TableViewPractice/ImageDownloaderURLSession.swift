@@ -40,6 +40,17 @@ class ImageDownloaderURLSession: NSObject {
             taskMap[urlString] = task
             task.resume()
         }
+        
+        
+        // serial queue
+//        let queue = DispatchQueue(label: "myQueue")
+        
+        // concurrent queue
+//        let concurrentQueue = DispatchQueue(label: "concurrentQueue", qos: .default, attributes: .concurrent)
+//        concurrentQueue.async {
+//            
+//        }
+        
     }
     
     public func cancelTask(_ imageURL: String) {
