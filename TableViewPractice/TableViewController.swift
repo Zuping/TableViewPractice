@@ -8,15 +8,16 @@
 
 import UIKit
 
-class TableViewController: UITableViewController {
-    
+class TableViewController: UITableViewController, UITableViewDataSourcePrefetching {
     var data = [RowData]()
     let imageDownLoader = ImageDownloader()
+    let imageDownLoaderUrlSession = ImageDownloaderURLSession()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         title = "My images"
+        tableView.prefetchDataSource = self
         tableView.estimatedRowHeight = 80
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.register(TableViewCell.self, forCellReuseIdentifier: "Cell")
@@ -65,31 +66,53 @@ class TableViewController: UITableViewController {
     }
  
     // MARK: - Table view delegate
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let rowData = self.data[indexPath.row]
-        if rowData.image != nil {
-            guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
-            if visibleRows.contains(indexPath) {
-                self.tableView.reloadRows(at: [indexPath], with: .none)
-            }
-            return
-        }
-        imageDownLoader.downLoadImage(rowData.imageURL) { (image: UIImage) in
-            rowData.image = image
-            guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
-            if visibleRows.contains(indexPath) {
-                 self.tableView.reloadRows(at: [indexPath], with: .none)
-            }
-            print("Debug: table view completion handler, row \(indexPath.row)")
-        }
-    }Ø
+//    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        let rowData = self.data[indexPath.row]
+//        if rowData.image != nil {
+//            guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
+//            if visibleRows.contains(indexPath) {
+//                self.tableView.reloadRows(at: [indexPath], with: .none)
+//            }
+//            return
+//        }
+//        imageDownLoader.downLoadImage(rowData.imageURL) { (image: UIImage) in
+//            rowData.image = image
+//            guard let visibleRows = tableView.indexPathsForVisibleRows else { return }
+//            if visibleRows.contains(indexPath) {
+//                 self.tableView.reloadRows(at: [indexPath], with: .none)
+//            }
+//            print("Debug: table view completion handler, row \(indexPath.row)")
+//        }
+//    }
+//
+//    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+//        let rowData = self.data[indexPath.row]
+//        if rowData.image != nil {
+//            return
+//        }
+//        imageDownLoader.cancelTask(rowData.imageURL)
+//    }
     
-    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let rowData = self.data[indexPath.row]
-        if rowData.image != nil {
-            return
+    // MARK: - UITableViewDataSourcePrefetching
+    func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            let rowData = self.data[indexPath.row]
+            if rowData.image != nil {
+                continue
+            }
+            imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
+                if let image = image {
+                    rowData.image = image
+                }
+            }
         }
-        imageDownLoader.cancelTask(rowData.imageURL)
+        
     }
-
+    
+    func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            let rowData = self.data[indexPath.row]
+            imageDownLoaderUrlSession.cancelTask(rowData.imageURL)
+        }
+    }
 }
