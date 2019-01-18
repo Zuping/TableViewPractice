@@ -55,6 +55,17 @@ class MyCollectionViewController: UICollectionViewController {
         collectionView.prefetchDataSource = self
         collectionView.register(MyCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
     }
+    
+    func loadImage(for indexPath: IndexPath, with rowData: RowData) {
+        imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
+            if let image = image {
+                rowData.image = image
+                if let cell = self.collectionView?.cellForItem(at: indexPath) as? MyCollectionViewCell {
+                    cell.backgroundImageView.image = image
+                }
+            }
+        }
+    }
 
     // MARK: UICollectionViewDataSource
 
@@ -71,6 +82,14 @@ class MyCollectionViewController: UICollectionViewController {
         guard let myCell = cell as? MyCollectionViewCell else {
             assert(false, "Invalid cell class")
         }
+
+    
+        return myCell
+    }
+    
+    // MARK: UICollectionViewDelegate
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let myCell = cell as! MyCollectionViewCell
         // Configure the cell
         myCell.textLabel.text = "\(indexPath.item)"
         
@@ -80,20 +99,8 @@ class MyCollectionViewController: UICollectionViewController {
         } else {
             self.loadImage(for: indexPath, with: rowData)
         }
-    
-        return myCell
     }
     
-    func loadImage(for indexPath: IndexPath, with rowData: RowData) {
-        imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
-            if let image = image {
-                rowData.image = image
-                if let cell = self.collectionView?.cellForItem(at: indexPath) as? MyCollectionViewCell {
-                    cell.backgroundImageView.image = image
-                }
-            }
-        }
-    }
 }
 
 extension MyCollectionViewController : UICollectionViewDelegateFlowLayout {
@@ -116,7 +123,7 @@ extension MyCollectionViewController: UICollectionViewDataSourcePrefetching {
             self.loadImage(for: indexPath, with: rowData)
         }
     }
-    
+
     public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
             let rowData = self.dataArray[indexPath.item]

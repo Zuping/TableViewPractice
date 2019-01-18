@@ -8,13 +8,15 @@
 
 import UIKit
 
-class ImageDownloaderURLSession: NSObject {
+class ImageDownloaderURLSession {
     private let imageCache = NSCache<NSString, UIImage>()
     private var taskMap = [String: URLSessionDataTask]()
     
     public func downLoadImage(_ urlString: String, completion: @escaping (_ image: UIImage?, _ error: Error? ) -> Void) {
         if let cachedImage = self.imageCache.object(forKey: urlString as NSString) {
-            completion(cachedImage, nil)
+            DispatchQueue.main.async {
+                completion(cachedImage, nil)
+            }
         } else {
             weak var weakSelf = self
             let url = URL(string: urlString)
