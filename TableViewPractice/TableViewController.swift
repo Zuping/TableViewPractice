@@ -25,7 +25,7 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
         if let filepath = Bundle.main.path(forResource: "MOCK_DATA", ofType: "json") {
             do {
                 let filedata = try Data(contentsOf: URL(fileURLWithPath: filepath))
-                let jsonData = try JSONSerialization.jsonObject(with: filedata, options: JSONSerialization.ReadingOptions.mutableContainers)
+                let jsonData = try JSONSerialization.jsonObject(with: filedata, options: .mutableContainers)
                 if let jsonArr = jsonData as? [Any] {
                     data.reserveCapacity(jsonArr.count)
                     for i in 0 ..< jsonArr.count {
@@ -38,7 +38,7 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
                     }
                 }
             } catch let error as Error? {
-                print("error reading local data", error!)
+                print(error ?? "Error loading local json file!")
             }
         }
         
@@ -69,22 +69,26 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let tmpCell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        assert(tmpCell.isKind(of: TableViewCell.self))
-        let cell = tmpCell as! TableViewCell
-//        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? TableViewCell  else {
-//
-//        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+        guard let myCell = cell as? TableViewCell else {
+            assert(false, "Invalid cell class")
+        }
 
         let row = data[indexPath.row]
-        cell.myLabel.text = String(row.rowNum)
+        myCell.myLabel.text = String(row.rowNum)
         if let image = row.image {
-            cell.myImageView.image = image
+            myCell.myImageView.image = image
+        } else {
+            self.loadImage(for: indexPath, with: row)
         }
-        return cell
+        return myCell
     }
  
     // MARK: - Table view delegate
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let myCollectionViewController = MyCollectionViewController()
+        self.navigationController?.pushViewController(myCollectionViewController, animated: true)
+    }
 //    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
 //        let rowData = self.data[indexPath.row]
 //        if rowData.image != nil {
@@ -112,24 +116,26 @@ class TableViewController: UITableViewController, UITableViewDataSourcePrefetchi
 //        imageDownLoader.cancelTask(rowData.imageURL)
 //    }
     
+    func loadImage(for indexPath: IndexPath, with rowData: RowData) {
+        imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
+            if let image = image {
+                rowData.image = image
+                if let cell = self.tableView.cellForRow(at: indexPath) as? TableViewCell {
+                    cell.myImageView.image = image
+                }
+            }
+        }
+    }
+    
     // MARK: - UITableViewDataSourcePrefetching
     func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
-            NSLog("\(indexPath)")
             let rowData = self.data[indexPath.row]
             if rowData.image != nil {
                 continue
             }
-            imageDownLoaderUrlSession.downLoadImage(rowData.imageURL) { (image: UIImage?, error: Error?) in
-                if let image = image {
-                    rowData.image = image
-                    if let cell = self.tableView.cellForRow(at: indexPath) as? TableViewCell {
-                        cell.myImageView.image = image
-                    }
-                }
-            }
+            self.loadImage(for: indexPath, with: rowData)
         }
-        
     }
     
     func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {

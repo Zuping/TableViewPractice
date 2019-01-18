@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F0487CB21F21D2A00C696EB /* MyCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0487CA21F21D2A00C696EB /* MyCollectionViewController.swift */; };
+		7F0487CD21F21F9600C696EB /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0487CC21F21F9600C696EB /* MyCollectionViewCell.swift */; };
 		7FB8580721BAC1120094F54C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8580621BAC1120094F54C /* AppDelegate.swift */; };
 		7FB8580921BAC1120094F54C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8580821BAC1120094F54C /* ViewController.swift */; };
 		7FB8580C21BAC1120094F54C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8580A21BAC1120094F54C /* Main.storyboard */; };
@@ -40,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7F0487CA21F21D2A00C696EB /* MyCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionViewController.swift; sourceTree = "<group>"; };
+		7F0487CC21F21F9600C696EB /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
 		7FB8580321BAC1120094F54C /* TableViewPractice.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TableViewPractice.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8580621BAC1120094F54C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7FB8580821BAC1120094F54C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -116,6 +120,8 @@
 				7FB8580D21BAC1140094F54C /* Assets.xcassets */,
 				7FB8580F21BAC1140094F54C /* LaunchScreen.storyboard */,
 				7FB8581221BAC1140094F54C /* Info.plist */,
+				7F0487CA21F21D2A00C696EB /* MyCollectionViewController.swift */,
+				7F0487CC21F21F9600C696EB /* MyCollectionViewCell.swift */,
 				7FB8583421BAC1D60094F54C /* TableViewController.swift */,
 				7FB8583621BAC2410094F54C /* TableViewCell.swift */,
 				7FB8583A21BAD0A90094F54C /* RowData.swift */,
@@ -275,7 +281,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F0487CB21F21D2A00C696EB /* MyCollectionViewController.swift in Sources */,
 				7FB8580921BAC1120094F54C /* ViewController.swift in Sources */,
+				7F0487CD21F21F9600C696EB /* MyCollectionViewCell.swift in Sources */,
 				7FB8583721BAC2410094F54C /* TableViewCell.swift in Sources */,
 				7FB8583D21BAE0920094F54C /* ImageDownloader.swift in Sources */,
 				7FFEC64E21EEA2C5005B8732 /* ImageDownloaderURLSession.swift in Sources */,

@@ -46,8 +46,8 @@ class ImageDownloaderURLSession: NSObject {
 //        let queue = DispatchQueue(label: "myQueue")
         
         // concurrent queue
-        let concurrentQueue = DispatchQueue(label: "concurrentQueue", qos: .default, attributes: .concurrent)
-        DispatchQueue.global(qos: .background)
+//        let concurrentQueue = DispatchQueue(label: "concurrentQueue", qos: .default, attributes: .concurrent)
+//        DispatchQueue.global(qos: .background)
 //        concurrentQueue.async {
 //            
 //        }
